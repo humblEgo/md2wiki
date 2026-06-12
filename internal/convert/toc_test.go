@@ -85,7 +85,7 @@ func TestTOC_InPlacePosition(t *testing.T) {
 	macro := strings.Index(got, tocMacroStr)
 	h1 := strings.Index(got, "<h1>A</h1>")
 	h2 := strings.Index(got, "<h2>B</h2>")
-	if !(h1 >= 0 && macro > h1 && h2 > macro) {
+	if h1 < 0 || macro <= h1 || h2 <= macro {
 		t.Errorf("macro should sit between H1 and H2; h1=%d macro=%d h2=%d, out=%q", h1, macro, h2, got)
 	}
 }
