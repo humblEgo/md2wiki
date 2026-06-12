@@ -1,6 +1,7 @@
 name: Release
 
-# remote 연결 후 아래 tags 트리거 주석을 해제하면 vX.Y.Z 태그 push 시 릴리스된다 (M8).
+# 첫 릴리스를 끊을 준비가 되면 아래 tags 트리거 주석을 해제한다.
+# 그러면 vX.Y.Z 태그 push 시 goreleaser가 크로스플랫폼 바이너리를 릴리스한다.
 on:
   # push:
   #   tags: ["v*"]
@@ -13,13 +14,13 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
-      - uses: goreleaser/goreleaser-action@v6
+      - uses: goreleaser/goreleaser-action@v7
         with:
           args: release --clean
         env:

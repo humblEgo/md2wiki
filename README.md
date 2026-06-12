@@ -1,5 +1,7 @@
 # md2wiki
 
+[![CI](https://github.com/humblEgo/md2wiki/actions/workflows/ci.yml/badge.svg)](https://github.com/humblEgo/md2wiki/actions/workflows/ci.yml)
+
 > A CLI that treats your Git repo's Markdown as the single source of truth (SSOT) and mirrors it one-way into a Confluence wiki, cleanly.
 
 Maintaining docs in two places means they drift apart fast. md2wiki keeps **the Markdown in your repo as the truth** and automatically reconciles Confluence to match it. So—
@@ -203,4 +205,4 @@ Released under the [MIT License](LICENSE).
 
 ## Status
 
-The MVP core is complete — directory mirroring, title-conflict resolution, link conversion, the three mermaid modes, and idempotent sync all work. Packaging such as release binaries and CI will be enabled after a remote repository is connected.
+The MVP core is complete — directory mirroring, title-conflict resolution, link conversion, the three mermaid modes, and idempotent sync all work. CI runs on every push to `main` and on pull requests (build, vet, test, lint). Release binaries via goreleaser are wired and ready; the tag trigger is enabled when cutting the first release.
