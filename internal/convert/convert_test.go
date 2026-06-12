@@ -51,6 +51,8 @@ func TestGoldenLinksImages(t *testing.T) { runGolden(t, "links_images") }
 
 func TestGoldenComposite(t *testing.T) { runGolden(t, "composite") }
 
+func TestGoldenTOC(t *testing.T) { runGolden(t, "toc") }
+
 func TestEscape_TextAndAttr(t *testing.T) {
 	got, err := Document([]byte("# A < B & C\n"))
 	if err != nil {

@@ -42,6 +42,7 @@ Project Overview          ← docs/README.md
   - `details` (default): the rendered image plus the original source in a collapsible (expand) region (when you want both)
   - `render`: the rendered image (PNG) only
   - `raw`: the original mermaid as a code block only (works without any external tooling)
+- **Table of contents** — put `<!-- toc -->` anywhere in a Markdown file and md2wiki replaces it in place with Confluence's native table-of-contents macro, which auto-builds from the page headings. Opt-in per file; pages without the marker are unaffected.
 - **Idempotent sync** — stores a content hash on each page and updates **only the pages that changed**. Running it again with the same input changes nothing.
 - **Mirror notice banner** — every mirrored page gets an info panel at the top telling readers the page is generated from a Git repo and not to edit it in Confluence. On by default; turn it off with `--banner=false` (sync) or `banner: false` in `md2wiki.yaml` (apply, global or per-mapping).
 
