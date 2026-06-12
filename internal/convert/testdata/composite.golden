@@ -1,0 +1,13 @@
+<h1>Guide</h1>
+<p>Intro paragraph with a <a href="https://example.com">link</a>.</p>
+<h2>Steps</h2>
+<ol>
+<li>first</li>
+<li>second</li>
+</ol>
+<ac:structured-macro ac:name="code"><ac:parameter ac:name="language">go</ac:parameter><ac:plain-text-body><![CDATA[run()
+]]></ac:plain-text-body></ac:structured-macro>
+<table><tbody>
+<tr><th>K</th><th>V</th></tr>
+<tr><td>a</td><td>b</td></tr>
+</tbody></table>

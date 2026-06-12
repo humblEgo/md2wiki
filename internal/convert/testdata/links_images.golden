@@ -1,0 +1,4 @@
+<p><a href="https://example.com/page">label</a></p>
+<p><ac:image ac:alt="alt text"><ri:url ri:value="https://example.com/img.png"/></ac:image></p>
+<p><ac:image><ri:url ri:value="https://example.com/noalt.png"/></ac:image></p>
+<details><summary>more</summary>hidden</details>

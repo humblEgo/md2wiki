@@ -1,0 +1,13 @@
+# 빌드 산출물
+/bin/
+/dist/
+*.exe
+*.test
+*.out
+
+# 에디터
+.idea/
+.vscode/
+
+# 문서 (remote 미반영)
+/docs/
