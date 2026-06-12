@@ -125,6 +125,10 @@ func (r *nodeRenderer) renderHTMLBlock(w util.BufWriter, source []byte, node ast
 		return ast.WalkSkipChildren, nil
 	}
 	n := node.(*ast.HTMLBlock)
+	if isTOCMarker(htmlBlockBytes(source, n)) {
+		write(w, tocMacro())
+		return ast.WalkSkipChildren, nil
+	}
 	writeLines(w, source, n.Lines())
 	if n.HasClosure() {
 		seg := n.ClosureLine
@@ -333,6 +337,22 @@ func writeLines(w util.BufWriter, source []byte, lines *text.Segments) {
 		seg := lines.At(i)
 		writeBytes(w, seg.Value(source))
 	}
+}
+
+// htmlBlockBytes returns the raw bytes of an HTML block — its content lines plus
+// the closing line, if any. Used to detect special markers such as the TOC comment.
+func htmlBlockBytes(source []byte, n *ast.HTMLBlock) []byte {
+	var b bytes.Buffer
+	lines := n.Lines()
+	for i := 0; i < lines.Len(); i++ {
+		seg := lines.At(i)
+		b.Write(seg.Value(source))
+	}
+	if n.HasClosure() {
+		seg := n.ClosureLine
+		b.Write(seg.Value(source))
+	}
+	return b.Bytes()
 }
 
 func writeCodeMacro(w util.BufWriter, lang string, body []byte) {
