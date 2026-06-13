@@ -58,10 +58,12 @@ func TestRunInit_WritesFileAndVerifies(t *testing.T) {
 	verified := ""
 	d := baseDeps(&out)
 	d.prompter = &stubPrompter{
-		inputs:    []string{"https://x.atlassian.net", "a@b.com", "docs", "DOCS", ""},
+		// Input: source, space, rootPage, baseURL, email
+		inputs:    []string{"docs", "DOCS", "", "https://x.atlassian.net", "a@b.com"},
 		passwords: []string{"tok-123"},
 		selects:   []string{"readme-body", "details"},
-		confirms:  []bool{true, true, false},
+		// Confirm: banner, add-more, open-browser
+		confirms:  []bool{true, false, true},
 	}
 	d.verify = func(_ context.Context, _, _, _, space string) error { verified = space; return nil }
 	d.fileExists = func(p string) bool { _, err := os.Stat(p); return err == nil }
@@ -97,12 +99,13 @@ func TestRunInit_NewPathWhenExists(t *testing.T) {
 	d := baseDeps(&out)
 	d.prompter = &stubPrompter{
 		inputs: []string{
-			"https://x.atlassian.net", "a@b.com", "docs", "DOCS", "",
-			"custom.yaml",
+			"docs", "DOCS", "", "https://x.atlassian.net", "a@b.com", // wizard
+			"custom.yaml", // overwrite=No → new path
 		},
 		passwords: []string{""},
 		selects:   []string{"readme-body", "details"},
-		confirms:  []bool{false, true, false, false},
+		// banner, add-more, open-browser, overwrite md2wiki.yaml
+		confirms: []bool{true, false, false, false},
 	}
 	d.fileExists = func(p string) bool { return p == defaultConfigName }
 	d.writeFile = func(p string, data []byte) error { written[p] = data; return nil }
@@ -139,8 +142,8 @@ func TestRunInit_Aborted(t *testing.T) {
 	if wrote {
 		t.Error("no file should be written on abort")
 	}
-	if !strings.Contains(out.String(), "취소") {
-		t.Errorf("output should mention 취소:\n%s", out.String())
+	if !strings.Contains(out.String(), "Cancelled") {
+		t.Errorf("output should mention Cancelled:\n%s", out.String())
 	}
 }
 
@@ -150,15 +153,14 @@ func TestRunInit_LoopsUntilFreePath(t *testing.T) {
 	d := baseDeps(&out)
 	d.prompter = &stubPrompter{
 		inputs: []string{
-			"https://x.atlassian.net", "a@b.com", "docs", "DOCS", "", // wizard
-			"taken.yaml",  // 1st new-path attempt (also exists)
-			"free.yaml",   // 2nd new-path attempt (free)
+			"docs", "DOCS", "", "https://x.atlassian.net", "a@b.com", // wizard
+			"taken.yaml", // 1st new-path attempt (exists)
+			"free.yaml",  // 2nd new-path attempt (free)
 		},
 		passwords: []string{""},
 		selects:   []string{"readme-body", "details"},
-		// open?=false, banner?=true, add-more?=false,
-		// overwrite md2wiki.yaml?=false, overwrite taken.yaml?=false
-		confirms: []bool{false, true, false, false, false},
+		// banner, add-more, open-browser, overwrite md2wiki.yaml, overwrite taken.yaml
+		confirms: []bool{true, false, false, false, false},
 	}
 	exists := map[string]bool{defaultConfigName: true, "taken.yaml": true}
 	d.fileExists = func(p string) bool { return exists[p] }
@@ -177,6 +179,18 @@ func TestPrintNextSteps_ShellSafeToken(t *testing.T) {
 	printNextSteps(&out, wizard.Result{Token: "ab'cd"}, defaultConfigName)
 	if !strings.Contains(out.String(), `export MD2WIKI_API_TOKEN='ab'\''cd'`) {
 		t.Errorf("token with a single quote must be shell-escaped, got:\n%s", out.String())
+	}
+}
+
+func TestPrintIntro(t *testing.T) {
+	var out bytes.Buffer
+	printIntro(&out)
+	s := out.String()
+	if !strings.Contains(s, "This wizard creates a md2wiki.yaml") {
+		t.Errorf("intro missing explanation:\n%s", s)
+	}
+	if !strings.Contains(s, "never written to the file") {
+		t.Errorf("intro should reassure about token:\n%s", s)
 	}
 }
 
