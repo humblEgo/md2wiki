@@ -41,10 +41,13 @@ func (f *fakePrompter) Confirm(string, bool) (bool, error) {
 
 func TestRun_SingleMapping(t *testing.T) {
 	p := &fakePrompter{
-		inputs:    []string{"https://x.atlassian.net", "a@b.com", "docs", "DOCS", ""},
+		// Input: source, space, rootPage, baseURL, email
+		inputs:    []string{"docs", "DOCS", "", "https://x.atlassian.net", "a@b.com"},
 		passwords: []string{"tok-123"},
-		selects:   []string{"readme-body", "details"},
-		confirms:  []bool{true, true, false},
+		// Select: layout, mermaid
+		selects: []string{"readme-body", "details"},
+		// Confirm: banner, add-more, open-browser
+		confirms: []bool{true, false, true},
 	}
 	var opened string
 	res, err := Run(p, func(u string) error { opened = u; return nil })
@@ -76,10 +79,12 @@ func TestRun_SingleMapping(t *testing.T) {
 
 func TestRun_MultipleMappings_SkipBrowser(t *testing.T) {
 	p := &fakePrompter{
-		inputs:    []string{"https://x.atlassian.net", "a@b.com", "docs", "DOCS", "111", "ops", "OPS", ""},
+		// Input: m1(source,space,root), m2(source,space,root), baseURL, email
+		inputs:    []string{"docs", "DOCS", "111", "ops", "OPS", "", "https://x.atlassian.net", "a@b.com"},
 		passwords: []string{""},
 		selects:   []string{"mirror", "raw"},
-		confirms:  []bool{false, false, true, false},
+		// Confirm: banner, add-more(yes), add-more(no), open-browser(no)
+		confirms: []bool{false, true, false, false},
 	}
 	var opened string
 	res, err := Run(p, func(u string) error { opened = u; return nil })

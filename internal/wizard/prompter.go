@@ -8,7 +8,7 @@ import (
 
 // ErrAborted is returned when the user cancels the wizard (e.g. Ctrl-C). The CLI
 // treats it as a clean, non-error exit. huhPrompter maps huh.ErrUserAborted to this.
-var ErrAborted = errors.New("취소되었습니다")
+var ErrAborted = errors.New("cancelled")
 
 // Prompter asks the user one value at a time. huhPrompter is the real implementation;
 // tests use a fake. validate (when non-nil) is applied to Input values before returning.
@@ -21,7 +21,7 @@ type Prompter interface {
 
 func validateNonEmpty(s string) error {
 	if strings.TrimSpace(s) == "" {
-		return errors.New("값을 입력하세요")
+		return errors.New("value is required")
 	}
 	return nil
 }
@@ -31,7 +31,7 @@ func validateURL(s string) error {
 		return err
 	}
 	if !strings.HasPrefix(s, "http://") && !strings.HasPrefix(s, "https://") {
-		return errors.New("http:// 또는 https:// 로 시작해야 합니다")
+		return errors.New("must start with http:// or https://")
 	}
 	return nil
 }
