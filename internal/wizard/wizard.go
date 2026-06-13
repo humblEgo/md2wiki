@@ -21,13 +21,20 @@ func Run(p Prompter, openBrowser func(string) error) (Result, error) {
 	var res Result
 
 	// Defaults first — no credentials required.
-	layout, err := p.Select("Default layout mode", []string{"readme-body", "mirror"})
+	layout, err := p.Select("Default layout mode", []Choice{
+		{Value: "readme-body", Desc: "A folder's README.md becomes the folder page's body; other .md files become child pages. (default)"},
+		{Value: "mirror", Desc: "1:1 reflection of the filesystem — README.md becomes an ordinary page too."},
+	})
 	if err != nil {
 		return res, err
 	}
 	res.File.LayoutMode = layout
 
-	mermaid, err := p.Select("Default mermaid mode", []string{"details", "render", "raw"})
+	mermaid, err := p.Select("Default mermaid mode", []Choice{
+		{Value: "details", Desc: "Rendered image plus the original source in a collapsible region. (default)"},
+		{Value: "render", Desc: "Rendered PNG image only."},
+		{Value: "raw", Desc: "Original mermaid as a code block; works without any external tooling."},
+	})
 	if err != nil {
 		return res, err
 	}

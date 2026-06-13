@@ -29,7 +29,7 @@ func (s *stubPrompter) Password(string) (string, error) {
 	s.passwords = s.passwords[1:]
 	return v, nil
 }
-func (s *stubPrompter) Select(string, []string) (string, error) {
+func (s *stubPrompter) Select(string, []wizard.Choice) (string, error) {
 	v := s.selects[0]
 	s.selects = s.selects[1:]
 	return v, nil
@@ -200,5 +200,7 @@ func (abortingPrompter) Input(_, _ string, _ func(string) error) (string, error)
 	return "", wizard.ErrAborted
 }
 func (abortingPrompter) Password(string) (string, error)         { return "", wizard.ErrAborted }
-func (abortingPrompter) Select(string, []string) (string, error) { return "", wizard.ErrAborted }
+func (abortingPrompter) Select(string, []wizard.Choice) (string, error) {
+	return "", wizard.ErrAborted
+}
 func (abortingPrompter) Confirm(string, bool) (bool, error)      { return false, wizard.ErrAborted }

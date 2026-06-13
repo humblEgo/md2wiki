@@ -41,9 +41,23 @@ func (huhPrompter) Password(label string) (string, error) {
 	return v, nil
 }
 
-func (huhPrompter) Select(label string, options []string) (string, error) {
+func (huhPrompter) Select(label string, choices []Choice) (string, error) {
 	var v string
-	if err := huh.NewSelect[string]().Title(label).Options(huh.NewOptions(options...)...).Value(&v).Run(); err != nil {
+	if len(choices) > 0 {
+		v = choices[0].Value // pre-highlight the first option so its description shows immediately
+	}
+	opts := make([]huh.Option[string], len(choices))
+	desc := make(map[string]string, len(choices))
+	for i, c := range choices {
+		opts[i] = huh.NewOption(c.Value, c.Value)
+		desc[c.Value] = c.Desc
+	}
+	sel := huh.NewSelect[string]().
+		Title(label).
+		Options(opts...).
+		DescriptionFunc(func() string { return desc[v] }, &v).
+		Value(&v)
+	if err := sel.Run(); err != nil {
 		return "", mapAbort(err)
 	}
 	return v, nil

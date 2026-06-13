@@ -27,7 +27,7 @@ func (f *fakePrompter) Password(string) (string, error) {
 	return v, nil
 }
 
-func (f *fakePrompter) Select(string, []string) (string, error) {
+func (f *fakePrompter) Select(string, []Choice) (string, error) {
 	v := f.selects[0]
 	f.selects = f.selects[1:]
 	return v, nil
