@@ -67,9 +67,13 @@ func (huhPrompter) Select(label string, choices []Choice) (string, error) {
 	return v, nil
 }
 
-func (huhPrompter) Confirm(label string, defaultVal bool) (bool, error) {
+func (huhPrompter) Confirm(label, description string, defaultVal bool) (bool, error) {
 	v := defaultVal
-	if err := huh.NewConfirm().Title(label).Value(&v).Run(); err != nil {
+	c := huh.NewConfirm().Title(label).Value(&v)
+	if description != "" {
+		c = c.Description(description)
+	}
+	if err := c.Run(); err != nil {
 		return false, mapAbort(err)
 	}
 	return v, nil

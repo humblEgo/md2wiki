@@ -124,7 +124,7 @@ func resolveOutputPath(d initDeps) (string, error) {
 		if !d.fileExists(path) {
 			return path, nil
 		}
-		overwrite, err := d.prompter.Confirm(fmt.Sprintf("%s already exists. Overwrite?", path), false)
+		overwrite, err := d.prompter.Confirm(fmt.Sprintf("%s already exists. Overwrite?", path), "", false)
 		if err != nil {
 			return "", err
 		}

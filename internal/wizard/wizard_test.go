@@ -33,7 +33,7 @@ func (f *fakePrompter) Select(string, []Choice) (string, error) {
 	return v, nil
 }
 
-func (f *fakePrompter) Confirm(string, bool) (bool, error) {
+func (f *fakePrompter) Confirm(string, string, bool) (bool, error) {
 	v := f.confirms[0]
 	f.confirms = f.confirms[1:]
 	return v, nil

@@ -34,7 +34,7 @@ func (s *stubPrompter) Select(string, []wizard.Choice) (string, error) {
 	s.selects = s.selects[1:]
 	return v, nil
 }
-func (s *stubPrompter) Confirm(string, bool) (bool, error) {
+func (s *stubPrompter) Confirm(string, string, bool) (bool, error) {
 	v := s.confirms[0]
 	s.confirms = s.confirms[1:]
 	return v, nil
@@ -63,7 +63,7 @@ func TestRunInit_WritesFileAndVerifies(t *testing.T) {
 		passwords: []string{"tok-123"},
 		selects:   []string{"readme-body", "details"},
 		// Confirm: banner, add-more, open-browser
-		confirms:  []bool{true, false, true},
+		confirms: []bool{true, false, true},
 	}
 	d.verify = func(_ context.Context, _, _, _, space string) error { verified = space; return nil }
 	d.fileExists = func(p string) bool { _, err := os.Stat(p); return err == nil }
@@ -199,8 +199,8 @@ type abortingPrompter struct{}
 func (abortingPrompter) Input(_, _ string, _ func(string) error) (string, error) {
 	return "", wizard.ErrAborted
 }
-func (abortingPrompter) Password(string) (string, error)         { return "", wizard.ErrAborted }
+func (abortingPrompter) Password(string) (string, error) { return "", wizard.ErrAborted }
 func (abortingPrompter) Select(string, []wizard.Choice) (string, error) {
 	return "", wizard.ErrAborted
 }
-func (abortingPrompter) Confirm(string, bool) (bool, error)      { return false, wizard.ErrAborted }
+func (abortingPrompter) Confirm(string, string, bool) (bool, error) { return false, wizard.ErrAborted }

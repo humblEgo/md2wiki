@@ -25,7 +25,7 @@ type Prompter interface {
 	Input(label, placeholder string, validate func(string) error) (string, error)
 	Password(label string) (string, error)
 	Select(label string, choices []Choice) (string, error)
-	Confirm(label string, defaultVal bool) (bool, error)
+	Confirm(label, description string, defaultVal bool) (bool, error)
 }
 
 func validateNonEmpty(s string) error {

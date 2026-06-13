@@ -57,6 +57,15 @@ const descMermaidRaw = `Original mermaid as a code block; no external tooling (m
   │   A --> B;   │
   └──────────────┘`
 
+// descBanner illustrates the info panel md2wiki injects at the top of every mirrored page.
+const descBanner = `Adds an info panel at the top of every mirrored page so readers know
+it's generated from Git and shouldn't be edited in Confluence.
+
+  ┌────────────────────────────────────────┐
+  │ This page is mirrored from a Git repo.  │
+  │ Edit the Markdown there, not here.      │
+  └────────────────────────────────────────┘`
+
 // Run drives the interactive flow using p for prompts and openBrowser to launch the
 // token page. It returns ErrAborted (via p) if the user cancels.
 //
@@ -85,7 +94,7 @@ func Run(p Prompter, openBrowser func(string) error) (Result, error) {
 	}
 	res.File.MermaidMode = mermaid
 
-	banner, err := p.Confirm("Enable the mirror notice banner by default?", true)
+	banner, err := p.Confirm("Enable the mirror notice banner by default?", descBanner, true)
 	if err != nil {
 		return res, err
 	}
@@ -98,7 +107,7 @@ func Run(p Prompter, openBrowser func(string) error) (Result, error) {
 			return res, err
 		}
 		res.File.Mappings = append(res.File.Mappings, m)
-		more, err := p.Confirm("Add another mapping?", false)
+		more, err := p.Confirm("Add another mapping?", "", false)
 		if err != nil {
 			return res, err
 		}
@@ -120,7 +129,7 @@ func Run(p Prompter, openBrowser func(string) error) (Result, error) {
 	}
 	res.File.Email = email
 
-	openIt, err := p.Confirm("Open the API token page in your browser?", true)
+	openIt, err := p.Confirm("Open the API token page in your browser?", "", true)
 	if err != nil {
 		return res, err
 	}
