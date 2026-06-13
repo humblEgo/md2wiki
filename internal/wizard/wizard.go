@@ -35,6 +35,28 @@ const descMirror = `1:1 mirror of the filesystem; README.md becomes an ordinary 
      ├─ README.md         ├─ README
      └─ auth.md           └─ auth`
 
+// Mermaid-mode descriptions, with a small mock of what lands on the Confluence page.
+// Bodies are flush-left for the same raw-string reason as the layout descriptions.
+const descMermaidDetails = `Rendered image + the original source in a collapsible region. (default)
+
+  ┌──────────────┐
+  │  ▢ diagram   │  rendered PNG
+  └──────────────┘
+  ▸ Mermaid source  (click to expand)`
+
+const descMermaidRender = `Rendered PNG image only — source not shown.
+
+  ┌──────────────┐
+  │  ▢ diagram   │  rendered PNG
+  └──────────────┘`
+
+const descMermaidRaw = `Original mermaid as a code block; no external tooling (mmdc) needed.
+
+  ┌──────────────┐
+  │ graph TD;    │  code block
+  │   A --> B;   │
+  └──────────────┘`
+
 // Run drives the interactive flow using p for prompts and openBrowser to launch the
 // token page. It returns ErrAborted (via p) if the user cancels.
 //
@@ -54,9 +76,9 @@ func Run(p Prompter, openBrowser func(string) error) (Result, error) {
 	res.File.LayoutMode = layout
 
 	mermaid, err := p.Select("Default mermaid mode", []Choice{
-		{Value: "details", Desc: "Rendered image plus the original source in a collapsible region. (default)"},
-		{Value: "render", Desc: "Rendered PNG image only."},
-		{Value: "raw", Desc: "Original mermaid as a code block; works without any external tooling."},
+		{Value: "details", Desc: descMermaidDetails},
+		{Value: "render", Desc: descMermaidRender},
+		{Value: "raw", Desc: descMermaidRaw},
 	})
 	if err != nil {
 		return res, err
