@@ -152,15 +152,17 @@ func promptMapping(p Prompter) (config.Mapping, error) {
 		return m, err
 	}
 	m.Source = source
-	space, err := p.Input("Target Confluence space key", "DOCS", validateNonEmpty)
+
+	// One paste covers both the space and the parent page: paste the Confluence URL of
+	// the page you want to mirror under (or a space URL for the space root, or a bare key).
+	dest, err := p.Input(
+		"Confluence destination — paste the page URL to mirror under (or a space URL / space key)",
+		"https://your-team.atlassian.net/wiki/spaces/DOCS/pages/123456/Home",
+		validateDestination,
+	)
 	if err != nil {
 		return m, err
 	}
-	m.Space = space
-	rootPage, err := p.Input("Parent page ID (optional — empty = space root)", "", nil)
-	if err != nil {
-		return m, err
-	}
-	m.RootPage = rootPage
+	m.Space, m.RootPage = parseDestination(dest)
 	return m, nil
 }

@@ -41,13 +41,11 @@ func (f *fakePrompter) Confirm(string, string, bool) (bool, error) {
 
 func TestRun_SingleMapping(t *testing.T) {
 	p := &fakePrompter{
-		// Input: source, space, rootPage, baseURL, email
-		inputs:    []string{"docs", "DOCS", "", "https://x.atlassian.net", "a@b.com"},
+		// Input: source, destination(URL with page), baseURL, email
+		inputs:    []string{"docs", "https://x.atlassian.net/wiki/spaces/DOCS/pages/999/Home", "https://x.atlassian.net", "a@b.com"},
 		passwords: []string{"tok-123"},
-		// Select: layout, mermaid
-		selects: []string{"readme-body", "details"},
-		// Confirm: banner, add-more, open-browser
-		confirms: []bool{true, false, true},
+		selects:   []string{"readme-body", "details"},
+		confirms:  []bool{true, false, true}, // banner, add-more, open-browser
 	}
 	var opened string
 	res, err := Run(p, func(u string) error { opened = u; return nil })
@@ -75,16 +73,18 @@ func TestRun_SingleMapping(t *testing.T) {
 	if res.File.Mappings[0].Source != "docs" || res.File.Mappings[0].Space != "DOCS" {
 		t.Errorf("m0 = %+v", res.File.Mappings[0])
 	}
+	if res.File.Mappings[0].RootPage != "999" {
+		t.Errorf("m0 parent = %q, want 999 (parsed from URL)", res.File.Mappings[0].RootPage)
+	}
 }
 
 func TestRun_MultipleMappings_SkipBrowser(t *testing.T) {
 	p := &fakePrompter{
-		// Input: m1(source,space,root), m2(source,space,root), baseURL, email
-		inputs:    []string{"docs", "DOCS", "111", "ops", "OPS", "", "https://x.atlassian.net", "a@b.com"},
+		// Input: m1(source, dest=bare key "DOCS"), m2(source, dest=space URL), baseURL, email
+		inputs:    []string{"docs", "DOCS", "ops", "https://x.atlassian.net/wiki/spaces/OPS", "https://x.atlassian.net", "a@b.com"},
 		passwords: []string{""},
 		selects:   []string{"mirror", "raw"},
-		// Confirm: banner, add-more(yes), add-more(no), open-browser(no)
-		confirms: []bool{false, true, false, false},
+		confirms:  []bool{false, true, false, false}, // banner, add-more(yes), add-more(no), open-browser(no)
 	}
 	var opened string
 	res, err := Run(p, func(u string) error { opened = u; return nil })
@@ -103,7 +103,10 @@ func TestRun_MultipleMappings_SkipBrowser(t *testing.T) {
 	if len(res.File.Mappings) != 2 {
 		t.Fatalf("mappings = %d, want 2", len(res.File.Mappings))
 	}
-	if res.File.Mappings[0].RootPage != "111" || res.File.Mappings[1].Space != "OPS" {
-		t.Errorf("mappings = %+v", res.File.Mappings)
+	if res.File.Mappings[0].Space != "DOCS" || res.File.Mappings[0].RootPage != "" {
+		t.Errorf("m0 = %+v", res.File.Mappings[0])
+	}
+	if res.File.Mappings[1].Space != "OPS" || res.File.Mappings[1].RootPage != "" {
+		t.Errorf("m1 = %+v", res.File.Mappings[1])
 	}
 }

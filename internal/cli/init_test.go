@@ -58,8 +58,8 @@ func TestRunInit_WritesFileAndVerifies(t *testing.T) {
 	verified := ""
 	d := baseDeps(&out)
 	d.prompter = &stubPrompter{
-		// Input: source, space, rootPage, baseURL, email
-		inputs:    []string{"docs", "DOCS", "", "https://x.atlassian.net", "a@b.com"},
+		// Input: source, destination, baseURL, email
+		inputs:    []string{"docs", "DOCS", "https://x.atlassian.net", "a@b.com"},
 		passwords: []string{"tok-123"},
 		selects:   []string{"readme-body", "details"},
 		// Confirm: banner, add-more, open-browser
@@ -99,7 +99,7 @@ func TestRunInit_NewPathWhenExists(t *testing.T) {
 	d := baseDeps(&out)
 	d.prompter = &stubPrompter{
 		inputs: []string{
-			"docs", "DOCS", "", "https://x.atlassian.net", "a@b.com", // wizard
+			"docs", "DOCS", "https://x.atlassian.net", "a@b.com", // wizard
 			"custom.yaml", // overwrite=No → new path
 		},
 		passwords: []string{""},
@@ -153,7 +153,7 @@ func TestRunInit_LoopsUntilFreePath(t *testing.T) {
 	d := baseDeps(&out)
 	d.prompter = &stubPrompter{
 		inputs: []string{
-			"docs", "DOCS", "", "https://x.atlassian.net", "a@b.com", // wizard
+			"docs", "DOCS", "https://x.atlassian.net", "a@b.com", // wizard
 			"taken.yaml", // 1st new-path attempt (exists)
 			"free.yaml",  // 2nd new-path attempt (free)
 		},

@@ -44,3 +44,10 @@ func validateURL(s string) error {
 	}
 	return nil
 }
+
+func validateDestination(s string) error {
+	if k, _ := parseDestination(s); strings.TrimSpace(k) == "" {
+		return errors.New("paste a Confluence space/page URL, or enter a space key")
+	}
+	return nil
+}
