@@ -19,6 +19,20 @@ func TestNewRootCmd(t *testing.T) {
 	}
 }
 
+func TestNewRootCmd_HasInitCommand(t *testing.T) {
+	cmd := NewRootCmd()
+	found := false
+	for _, c := range cmd.Commands() {
+		if c.Name() == "init" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Error("root 커맨드에 init 서브커맨드가 등록되어야 함")
+	}
+}
+
 func TestNewRootCmd_HelpOnNoArgs(t *testing.T) {
 	cmd := NewRootCmd()
 	var buf bytes.Buffer

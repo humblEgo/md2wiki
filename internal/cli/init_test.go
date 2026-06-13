@@ -144,6 +144,34 @@ func TestRunInit_Aborted(t *testing.T) {
 	}
 }
 
+func TestRunInit_LoopsUntilFreePath(t *testing.T) {
+	var out bytes.Buffer
+	written := map[string][]byte{}
+	d := baseDeps(&out)
+	d.prompter = &stubPrompter{
+		inputs: []string{
+			"https://x.atlassian.net", "a@b.com", "docs", "DOCS", "", // wizard
+			"taken.yaml",  // 1st new-path attempt (also exists)
+			"free.yaml",   // 2nd new-path attempt (free)
+		},
+		passwords: []string{""},
+		selects:   []string{"readme-body", "details"},
+		// open?=false, banner?=true, add-more?=false,
+		// overwrite md2wiki.yaml?=false, overwrite taken.yaml?=false
+		confirms: []bool{false, true, false, false, false},
+	}
+	exists := map[string]bool{defaultConfigName: true, "taken.yaml": true}
+	d.fileExists = func(p string) bool { return exists[p] }
+	d.writeFile = func(p string, data []byte) error { written[p] = data; return nil }
+
+	if err := runInit(context.Background(), d); err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := written["free.yaml"]; !ok {
+		t.Errorf("expected write to free.yaml, wrote: %v", keys(written))
+	}
+}
+
 type abortingPrompter struct{}
 
 func (abortingPrompter) Input(_, _ string, _ func(string) error) (string, error) {
