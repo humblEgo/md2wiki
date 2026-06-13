@@ -11,22 +11,22 @@ import (
 
 // File is the full structure of an md2wiki.yaml file.
 type File struct {
-	BaseURL     string    `yaml:"baseUrl"`
-	Email       string    `yaml:"email"`
-	LayoutMode  string    `yaml:"layoutMode"`
-	MermaidMode string    `yaml:"mermaidMode"`
-	Banner      *bool     `yaml:"banner"` // nil means unset (default applies); the CLI resolves the default to true.
-	Mappings    []Mapping `yaml:"mappings"`
+	BaseURL     string    `yaml:"baseUrl,omitempty"`
+	Email       string    `yaml:"email,omitempty"`
+	LayoutMode  string    `yaml:"layoutMode,omitempty"`
+	MermaidMode string    `yaml:"mermaidMode,omitempty"`
+	Banner      *bool     `yaml:"banner,omitempty"` // nil means unset (default applies); the CLI resolves the default to true.
+	Mappings    []Mapping `yaml:"mappings,omitempty"`
 }
 
 // Mapping maps a single directory to a space and parent page.
 type Mapping struct {
-	Source      string `yaml:"source"`
-	Space       string `yaml:"space"`
-	RootPage    string `yaml:"rootPage"`
-	LayoutMode  string `yaml:"layoutMode"`
-	MermaidMode string `yaml:"mermaidMode"`
-	Banner      *bool  `yaml:"banner"` // nil inherits the global value.
+	Source      string `yaml:"source,omitempty"`
+	Space       string `yaml:"space,omitempty"`
+	RootPage    string `yaml:"rootPage,omitempty"`
+	LayoutMode  string `yaml:"layoutMode,omitempty"`
+	MermaidMode string `yaml:"mermaidMode,omitempty"`
+	Banner      *bool  `yaml:"banner,omitempty"` // nil inherits the global value.
 }
 
 // Load reads the YAML at path and unmarshals it into a File. A missing file,
@@ -46,4 +46,15 @@ func Load(path string) (*File, error) {
 		return nil, fmt.Errorf("config: parse %q: %w", path, err)
 	}
 	return &f, nil
+}
+
+// Marshal serializes the File back to md2wiki.yaml bytes. Empty optional fields are
+// omitted (omitempty tags) so generated files stay clean. A non-nil *false Banner is
+// still emitted, because only nil pointers count as empty.
+func (f *File) Marshal() ([]byte, error) {
+	data, err := yaml.Marshal(f)
+	if err != nil {
+		return nil, fmt.Errorf("config: marshal: %w", err)
+	}
+	return data, nil
 }
