@@ -46,7 +46,11 @@ func validateURL(s string) error {
 }
 
 func validateDestination(s string) error {
-	if k, _ := parseDestination(s); strings.TrimSpace(k) == "" {
+	// A space key never contains a slash or whitespace; if parsing yields one, the input
+	// was a URL we couldn't extract a key from (e.g. ".../wiki/spaces" with no key after it).
+	k, _ := parseDestination(s)
+	k = strings.TrimSpace(k)
+	if k == "" || strings.ContainsAny(k, "/ \t") {
 		return errors.New("paste a Confluence space/page URL, or enter a space key")
 	}
 	return nil

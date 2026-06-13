@@ -25,3 +25,28 @@ func TestParseDestination(t *testing.T) {
 		}
 	}
 }
+
+func TestValidateDestination(t *testing.T) {
+	ok := []string{
+		"DOCS",
+		"~7120abc",
+		"https://x.atlassian.net/wiki/spaces/OPS",
+		"https://x.atlassian.net/wiki/spaces/DOCS/pages/9/Home",
+	}
+	for _, s := range ok {
+		if err := validateDestination(s); err != nil {
+			t.Errorf("validateDestination(%q) = %v, want nil", s, err)
+		}
+	}
+	bad := []string{
+		"",
+		"   ",
+		"https://x.atlassian.net/wiki/spaces", // no key after /spaces
+		"https://x.atlassian.net/wiki",        // not a space URL at all
+	}
+	for _, s := range bad {
+		if err := validateDestination(s); err == nil {
+			t.Errorf("validateDestination(%q) = nil, want error", s)
+		}
+	}
+}
