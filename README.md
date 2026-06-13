@@ -35,6 +35,7 @@ Project Overview          ← docs/README.md
 
 ## ✨ Features
 
+- **Interactive setup** — `md2wiki init` generates `md2wiki.yaml` through a guided wizard (arrow-key selects), verifies your Confluence connection, and opens the API-token page for you. The token is never written to the file.
 - **Directory tree mirroring** — maps your folder structure onto a Confluence page hierarchy. Two layouts are supported:
   - `readme-body` (default): a folder's `README.md` becomes the folder page's body, and the remaining `.md` files become child pages.
   - `mirror`: a 1:1 reflection of the filesystem. `README.md` becomes an ordinary page too.
@@ -67,6 +68,24 @@ git clone https://github.com/humblEgo/md2wiki
 cd md2wiki
 make build   # produces bin/md2wiki
 ```
+
+## Quick start with `md2wiki init`
+
+If you'd rather not hand-write `md2wiki.yaml`, run the interactive wizard:
+
+```bash
+md2wiki init
+```
+
+It walks you through the base URL, email, layout/mermaid defaults, and one or more
+directory→space mappings, then writes `md2wiki.yaml`. It can open the
+[API token page](https://id.atlassian.com/manage-profile/security/api-tokens) in your
+browser, and — if you paste a token — verifies the connection to each space before
+finishing. The token is **never written to the file**; the wizard prints the
+`export MD2WIKI_API_TOKEN=...` line for you to set in your shell.
+
+If `md2wiki.yaml` already exists, the wizard asks before overwriting and lets you enter a
+different filename (use it later with `md2wiki apply --config <path>`).
 
 ## Quick start
 
