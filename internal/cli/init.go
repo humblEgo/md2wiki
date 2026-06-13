@@ -138,6 +138,12 @@ func verifyConnections(ctx context.Context, d initDeps, res wizard.Result) {
 	}
 }
 
+// shellSingleQuote wraps s in single quotes safely for a POSIX shell, escaping any
+// embedded single quote as '\'' so the emitted command can't be broken or injected.
+func shellSingleQuote(s string) string {
+	return "'" + strings.ReplaceAll(s, "'", `'\''`) + "'"
+}
+
 // printNextSteps tells the user how to set the token env var and run apply.
 func printNextSteps(out io.Writer, res wizard.Result, path string) {
 	_, _ = fmt.Fprintln(out, "\n다음 단계:")
@@ -145,7 +151,7 @@ func printNextSteps(out io.Writer, res wizard.Result, path string) {
 	if tok == "" {
 		tok = "<your-confluence-api-token>"
 	}
-	_, _ = fmt.Fprintf(out, "  export MD2WIKI_API_TOKEN='%s'\n", tok)
+	_, _ = fmt.Fprintf(out, "  export MD2WIKI_API_TOKEN=%s\n", shellSingleQuote(tok))
 	if path == defaultConfigName {
 		_, _ = fmt.Fprintln(out, "  md2wiki apply")
 	} else {

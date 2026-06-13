@@ -172,6 +172,14 @@ func TestRunInit_LoopsUntilFreePath(t *testing.T) {
 	}
 }
 
+func TestPrintNextSteps_ShellSafeToken(t *testing.T) {
+	var out bytes.Buffer
+	printNextSteps(&out, wizard.Result{Token: "ab'cd"}, defaultConfigName)
+	if !strings.Contains(out.String(), `export MD2WIKI_API_TOKEN='ab'\''cd'`) {
+		t.Errorf("token with a single quote must be shell-escaped, got:\n%s", out.String())
+	}
+}
+
 type abortingPrompter struct{}
 
 func (abortingPrompter) Input(_, _ string, _ func(string) error) (string, error) {
