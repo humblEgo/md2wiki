@@ -12,6 +12,29 @@ type Result struct {
 	Token string
 }
 
+// Layout-mode descriptions shown (and live-updated) as the user moves between options.
+// The little trees illustrate how the same repo lays out under each mode. The body lines
+// are written flush-left on purpose: in a raw string the source indentation is literal.
+const descReadmeBody = `README.md becomes the folder's page body; other .md files become child pages. (default)
+
+  repo                 Confluence
+  docs/                Overview
+  ├─ README.md         ├─ Setup
+  ├─ setup.md          └─ API
+  └─ api/                 └─ Auth
+     ├─ README.md
+     └─ auth.md`
+
+const descMirror = `1:1 mirror of the filesystem; README.md becomes an ordinary page too.
+
+  repo                 Confluence
+  docs/                docs
+  ├─ README.md         ├─ README
+  ├─ setup.md          ├─ setup
+  └─ api/              └─ api
+     ├─ README.md         ├─ README
+     └─ auth.md           └─ auth`
+
 // Run drives the interactive flow using p for prompts and openBrowser to launch the
 // token page. It returns ErrAborted (via p) if the user cancels.
 //
@@ -22,8 +45,8 @@ func Run(p Prompter, openBrowser func(string) error) (Result, error) {
 
 	// Defaults first — no credentials required.
 	layout, err := p.Select("Default layout mode", []Choice{
-		{Value: "readme-body", Desc: "A folder's README.md becomes the folder page's body; other .md files become child pages. (default)"},
-		{Value: "mirror", Desc: "1:1 reflection of the filesystem — README.md becomes an ordinary page too."},
+		{Value: "readme-body", Desc: descReadmeBody},
+		{Value: "mirror", Desc: descMirror},
 	})
 	if err != nil {
 		return res, err
