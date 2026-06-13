@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -104,5 +105,53 @@ mappings:
 	}
 	if f.Mappings[1].Banner != nil {
 		t.Errorf("m1 banner = %v, want nil (unset)", f.Mappings[1].Banner)
+	}
+}
+
+func TestMarshal_RoundTrip(t *testing.T) {
+	tr := true
+	in := &File{
+		BaseURL:     "https://x.atlassian.net",
+		Email:       "a@b.com",
+		LayoutMode:  "readme-body",
+		MermaidMode: "details",
+		Banner:      &tr,
+		Mappings: []Mapping{
+			{Source: "docs/specs", Space: "PROD", RootPage: "123"},
+			{Source: "docs/ops", Space: "OPS", LayoutMode: "mirror"},
+		},
+	}
+	data, err := in.Marshal()
+	if err != nil {
+		t.Fatal(err)
+	}
+	dir := t.TempDir()
+	p := writeFile(t, dir, "md2wiki.yaml", string(data))
+	out, err := Load(p)
+	if err != nil {
+		t.Fatalf("round-trip Load failed: %v\n--- yaml ---\n%s", err, data)
+	}
+	if out.BaseURL != in.BaseURL || out.Email != in.Email || out.LayoutMode != in.LayoutMode {
+		t.Errorf("globals mismatch: %+v", out)
+	}
+	if len(out.Mappings) != 2 || out.Mappings[1].LayoutMode != "mirror" {
+		t.Errorf("mappings mismatch: %+v", out.Mappings)
+	}
+	if out.Banner == nil || *out.Banner != true {
+		t.Errorf("banner = %v, want *true", out.Banner)
+	}
+}
+
+func TestMarshal_OmitsEmpty(t *testing.T) {
+	in := &File{Mappings: []Mapping{{Source: "docs", Space: "DOCS"}}}
+	data, err := in.Marshal()
+	if err != nil {
+		t.Fatal(err)
+	}
+	s := string(data)
+	for _, bad := range []string{"baseUrl:", "email:", "layoutMode:", "mermaidMode:", "banner:", "rootPage:"} {
+		if strings.Contains(s, bad) {
+			t.Errorf("expected %q to be omitted, got:\n%s", bad, s)
+		}
 	}
 }
