@@ -49,7 +49,11 @@ func (huhPrompter) Select(label string, choices []Choice) (string, error) {
 	opts := make([]huh.Option[string], len(choices))
 	desc := make(map[string]string, len(choices))
 	for i, c := range choices {
-		opts[i] = huh.NewOption(c.Value, c.Value)
+		label := c.Label
+		if label == "" {
+			label = c.Value
+		}
+		opts[i] = huh.NewOption(label, c.Value)
 		desc[c.Value] = c.Desc
 	}
 	sel := huh.NewSelect[string]().

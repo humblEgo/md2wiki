@@ -10,10 +10,12 @@ import (
 // treats it as a clean, non-error exit. huhPrompter maps huh.ErrUserAborted to this.
 var ErrAborted = errors.New("cancelled")
 
-// Choice is a selectable option: Value is stored/returned, Desc is a short hint shown
-// to the user (huh displays it under the field and updates it as the cursor moves).
+// Choice is a selectable option: Value is stored/returned, Label is the text shown in
+// the list (falls back to Value when empty — used e.g. to mark the default), and Desc is
+// a short hint shown under the field that updates as the cursor moves.
 type Choice struct {
 	Value string
+	Label string
 	Desc  string
 }
 

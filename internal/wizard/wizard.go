@@ -15,7 +15,7 @@ type Result struct {
 // Layout-mode descriptions shown (and live-updated) as the user moves between options.
 // The little trees illustrate how the same repo lays out under each mode. The body lines
 // are written flush-left on purpose: in a raw string the source indentation is literal.
-const descReadmeBody = `README.md becomes the folder's page body; other .md files become child pages. (default)
+const descReadmeBody = `README.md becomes the folder's page body; other .md files become child pages.
 
   repo                 Confluence
   docs/                Overview
@@ -37,7 +37,7 @@ const descMirror = `1:1 mirror of the filesystem; README.md becomes an ordinary 
 
 // Mermaid-mode descriptions, with a small mock of what lands on the Confluence page.
 // Bodies are flush-left for the same raw-string reason as the layout descriptions.
-const descMermaidDetails = `Rendered image + the original source in a collapsible region. (default)
+const descMermaidDetails = `Rendered image + the original source in a collapsible region.
 
   ┌──────────────┐
   │  ▢ diagram   │  rendered PNG
@@ -67,8 +67,8 @@ func Run(p Prompter, openBrowser func(string) error) (Result, error) {
 
 	// Defaults first — no credentials required.
 	layout, err := p.Select("Default layout mode", []Choice{
-		{Value: "readme-body", Desc: descReadmeBody},
-		{Value: "mirror", Desc: descMirror},
+		{Value: "readme-body", Label: "readme-body (default)", Desc: descReadmeBody},
+		{Value: "mirror", Label: "mirror", Desc: descMirror},
 	})
 	if err != nil {
 		return res, err
@@ -76,9 +76,9 @@ func Run(p Prompter, openBrowser func(string) error) (Result, error) {
 	res.File.LayoutMode = layout
 
 	mermaid, err := p.Select("Default mermaid mode", []Choice{
-		{Value: "details", Desc: descMermaidDetails},
-		{Value: "render", Desc: descMermaidRender},
-		{Value: "raw", Desc: descMermaidRaw},
+		{Value: "details", Label: "details (default)", Desc: descMermaidDetails},
+		{Value: "render", Label: "render", Desc: descMermaidRender},
+		{Value: "raw", Label: "raw", Desc: descMermaidRaw},
 	})
 	if err != nil {
 		return res, err
