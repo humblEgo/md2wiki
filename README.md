@@ -77,10 +77,15 @@ If you'd rather not hand-write `md2wiki.yaml`, run the interactive wizard:
 md2wiki init
 ```
 
-It walks you through the base URL, email, layout/mermaid defaults, and one or more
-directory→space mappings, then writes `md2wiki.yaml`. It can open the
-[API token page](https://id.atlassian.com/manage-profile/security/api-tokens) in your
-browser, and — if you paste a token — verifies the connection to each space before
+It first asks for the easy stuff — layout/mermaid defaults and one or more
+directory→destination mappings — then your Confluence connection last, so you can walk
+through it even without credentials handy. For each mapping you just **paste the
+Confluence URL** of the page you want to mirror under (e.g.
+`https://your-team.atlassian.net/wiki/spaces/DOCS/pages/123456/Home`); the wizard pulls
+the space key and parent page out of it (a bare space key works too).
+
+It can open the [API token page](https://id.atlassian.com/manage-profile/security/api-tokens)
+in your browser, and — if you paste a token — verifies the connection to each space before
 finishing. The token is **never written to the file**; the wizard prints the
 `export MD2WIKI_API_TOKEN=...` line for you to set in your shell.
 
