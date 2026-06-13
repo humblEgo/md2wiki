@@ -155,3 +155,15 @@ func TestMarshal_OmitsEmpty(t *testing.T) {
 		}
 	}
 }
+
+func TestMarshal_FalseBannerIsEmitted(t *testing.T) {
+	fls := false
+	in := &File{Banner: &fls, Mappings: []Mapping{{Source: "docs", Space: "DOCS"}}}
+	data, err := in.Marshal()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(data), "banner: false") {
+		t.Errorf("non-nil *false Banner must be emitted, got:\n%s", data)
+	}
+}
